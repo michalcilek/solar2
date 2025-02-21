@@ -1,50 +1,18 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title>Solar2 Project</title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2113.65">
-  <style type="text/css">
-    span.s1 {font-kerning: none}
-  </style>
+  <meta charset="UTF-8" />
+  <!-- Nastavení viewportu pro správné zobrazení na mobilních zařízeních -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solární kalkulačka</title>
 </head>
 <body>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1">&lt;!DOCTYPE html&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1">&lt;html lang="en"&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1">&lt;head&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8" /&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;title&gt;Solární kalkulačka&lt;/title&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1">&lt;/head&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1">&lt;body&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h1&gt;Solární kalkulačka&lt;/h1&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000; min-height: 14.0px"><span class="s1"></span><br></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- Tlačítko je volitelné, p5.js standardně spouští setup()/draw() samo.</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">       </span>Pokud chcete ruční volání, můžete to tlačítko použít. --&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;button onclick="runSolarScript()"&gt;Spustit skript&lt;/button&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000; min-height: 14.0px"><span class="s1"></span><br></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- Načtení knihovny p5.js z CDN: --&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.min.js"&gt;&lt;/script&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000; min-height: 14.0px"><span class="s1"><span class="Apple-converted-space">  </span></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- Váš p5 kód (solar.js). Ujistěte se, že jméno souboru a cesta sedí. --&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;script src="solar.js"&gt;&lt;/script&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000; min-height: 14.0px"><span class="s1"></span><br></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;script&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">    </span>function runSolarScript() {</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">      </span>// Volitelný způsob, jak znovu zavolat setup() z p5 kódu.</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">      </span>// V p5 stačí definovat setup(), draw(), atd.</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">      </span>// Tato funkce se spustí při kliknutí na tlačítko:</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">      </span>if (typeof setup === 'function') {</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">        </span>console.log('Volám setup() ručně...');</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">        </span>setup();</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">      </span>} else {</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">        </span>console.error('setup() není v solar.js definovaná nebo se nenačetla správně.');</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">      </span>}</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">    </span>}</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1">&lt;/body&gt;</span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000"><span class="s1">&lt;/html&gt;</span></h1>
+  <h1>Solární kalkulačka</h1>
+
+  <!-- Načtení p5.js z veřejného CDN (verzi si můžete upravit) -->
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.min.js"></script>
+
+  <!-- Váš kód s logikou solární kalkulačky v p5 (musí definovat setup(), draw() atd.) -->
+  <script src="solar.js"></script>
 </body>
 </html>
