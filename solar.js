@@ -1,14 +1,13 @@
-// -------------------------------------------------------
-// Kalkulačka v p5.js pro zadaný počet panelů a vybraný MPPT
-// Zobrazuje Voc(25 °C) a Voc(-20 °C), kontroluje proud a napětí
-// Baterie: 48 V (jen informativně).
-// -------------------------------------------------------
+/***********************
+ *  VYLEPŠENÝ SOLAR.JS
+ *  - layout pro mobil 9:16
+ **********************/
 
-// 1) Seznam regulátorů (SmartSolar) pro dropdown menu
+// Seznam dostupných modelů MPPT (SmartSolar)
 const mpptList = [
   { model: "SmartSolar 100/20",   maxVoc: 100, maxIsc: 20 },
   { model: "SmartSolar 150/35",   maxVoc: 150, maxIsc: 35 },
-  { model: "SmartSolar 150/45",   maxVoc: 150, maxIsc: 45 },  // Oprava překlepu
+  { model: "SmartSolar 150/45",   maxVoc: 150, maxIsc: 45 },
   { model: "SmartSolar 150/60",   maxVoc: 150, maxIsc: 60 },
   { model: "SmartSolar 150/70",   maxVoc: 150, maxIsc: 70 },
   { model: "SmartSolar 150/85",   maxVoc: 150, maxIsc: 85 },
@@ -19,11 +18,14 @@ const mpptList = [
   { model: "SmartSolar 250/100",  maxVoc: 250, maxIsc: 100 }
 ];
 
-// 2) Globální proměnné pro p5
-let inpPanelCount;    // Textový vstup: počet panelů
-let selMPPT;          // Dropdown (select) pro volbu modelu
+// Konstantní napětí baterie
+const baterieNapeti = 48; 
 
-// Vstupy pro parametry panelu:
+// Globální proměnné pro vstupní prvky:
+let inpPanelCount; 
+let selMPPT;
+
+// Parametry panelu:
 let inpPanelVykon;
 let inpPanelVoc;
 let inpPanelIsc;
@@ -31,84 +33,112 @@ let inpPanelVmp;
 let inpPanelImp;
 let inpAlphaVoc;
 
-// Konstantní napětí baterie (48 V)
-const baterieNapeti = 48; // jen zobrazujeme (v tomto kódu neužíváme v logice)
-
-// Teplota pro výpočet Voc za studena
-const tempLow = -20; // °C
+// Proměnné pro výstup:
+let resultP; // P5 element, kam budeme vypisovat výsledky
 
 function setup() {
-  createCanvas(900, 520);
-  textSize(14);
-  noStroke();
+  // Nepotřebujeme plátno pro kreslení, jen DOM rozhraní
+  noCanvas();
 
-  // 1) Vstup pro počet panelů:
-  inpPanelCount = createInput('36'); // výchozí třeba 36
-  inpPanelCount.position(20, 40);
-  inpPanelCount.size(60);
+  // Hlavní kontejner (použijeme style pro mobil-friendly layout)
+  // maxWidth 320-400px je vhodné pro mobilní zobrazení, 
+  // margin: auto vycentruje pro desktop
+  let container = createDiv().style('width','95%')
+                             .style('max-width','400px')
+                             .style('margin','0 auto')
+                             .style('font-size','16px')
+                             .style('font-family','sans-serif');
 
-  // Popisek k inputu
-  // (Samotný text nakreslíme v draw)
+  // 1) Baterie nahoře, zarovnáme doleva
+  createP("Baterie: " + baterieNapeti + " V (konstantní)")
+    .parent(container)
+    .style('font-weight','bold')
+    .style('margin','0 0 1em 0');
 
-  // 2) Dropdown pro výběr modelu MPPT:
-  selMPPT = createSelect();
-  selMPPT.position(120, 40);
-  for (let reg of mpptList) {
+  // 2) Řádek pro "Počet panelů" a "Vyber MPPT"
+  //    Dáme je pod sebe, aby to bylo přehledné v mobilu
+  let row1 = createDiv().parent(container).style('margin','0 0 1em 0');
+  
+  createSpan("Počet panelů: ").parent(row1);
+  inpPanelCount = createInput('36')
+    .parent(row1)
+    .style('width','60px')
+    .style('margin-left','5px');
+
+  createSpan("  Vyber MPPT model: ").parent(row1).style('margin-left','10px');
+  selMPPT = createSelect().parent(row1);
+  // Naplníme dropdown
+  mpptList.forEach((reg) => {
     selMPPT.option(reg.model);
+  });
+  selMPPT.selected('SmartSolar 150/70'); // Výchozí
+
+  // 3) Parametry panelu:
+  createP("Parametry jednoho panelu:")
+    .parent(container)
+    .style('margin','0 0 0.5em 0')
+    .style('font-weight','bold');
+
+  // Vytvoříme svislou kolonku vstupů
+  let panelParams = createDiv().parent(container).style('margin-bottom','1em');
+
+  // Malá pomocná funkce:
+  function addLabelInput(labelText, defaultVal) {
+    let row = createDiv().parent(panelParams)
+        .style('display','flex')
+        .style('justify-content','space-between')
+        .style('margin-bottom','4px');
+    createSpan(labelText).parent(row);
+    let inp = createInput(defaultVal).parent(row).style('width','60px');
+    return inp;
   }
-  // Můžeme nastavit výchozí volbu:
-  selMPPT.selected('SmartSolar 150/70');
 
-  // 3) Parametry panelu
-  inpPanelVykon = createInput('410.0'); // W
-  inpPanelVykon.position(20, 100);
-  inpPanelVykon.size(70);
+  inpPanelVykon = addLabelInput("Výkon (W)", "410.0");
+  inpPanelVoc   = addLabelInput("Voc (V)", "37.60");
+  inpPanelIsc   = addLabelInput("Isc (A)", "13.89");
+  inpPanelVmp   = addLabelInput("Vmp (V)", "31.30");
+  inpPanelImp   = addLabelInput("Imp (A)", "13.10");
+  inpAlphaVoc   = addLabelInput("α Voc (např. -0.003)", "-0.003");
 
-  inpPanelVoc = createInput('37.60');   // V
-  inpPanelVoc.position(20, 130);
-  inpPanelVoc.size(70);
+  // 4) Výsledky
+  resultP = createP("").parent(container)
+    .style('background','#f7f7f7')
+    .style('border','1px solid #ddd')
+    .style('padding','1em');
 
-  inpPanelIsc = createInput('13.89');   // A
-  inpPanelIsc.position(20, 160);
-  inpPanelIsc.size(70);
+  // Po zmene vstupu budeme rovnou počítat
+  inpPanelCount.input(updateCalc);
+  selMPPT.changed(updateCalc);
+  inpPanelVykon.input(updateCalc);
+  inpPanelVoc.input(updateCalc);
+  inpPanelIsc.input(updateCalc);
+  inpPanelVmp.input(updateCalc);
+  inpPanelImp.input(updateCalc);
+  inpAlphaVoc.input(updateCalc);
 
-  inpPanelVmp = createInput('31.30');   // V
-  inpPanelVmp.position(20, 190);
-  inpPanelVmp.size(70);
-
-  inpPanelImp = createInput('13.10');   // A
-  inpPanelImp.position(20, 220);
-  inpPanelImp.size(70);
-
-  inpAlphaVoc = createInput('-0.003');  // Teplotní koeficient Voc
-  inpAlphaVoc.position(20, 250);
-  inpAlphaVoc.size(70);
+  // Provedeme 1. výpočet
+  updateCalc();
 }
 
 function draw() {
-  background(245);
+  // nepotřebujeme draw, nic nekreslíme
+}
 
-  fill(0);
-  text("Počet panelů:", 20, 35);
-  text("(Zadejte integer)", 20, 55);
-
-  text("Vyber MPPT model:", 120, 35);
-
-  // Baterie:
-  text(`Baterie: ${baterieNapeti} V (konstantní)`, 300, 35);
-
-  text("Parametry jednoho panelu:", 20, 85);
-  text("Výkon (W)", 100, 115);
-  text("Voc (V)",   100, 145);
-  text("Isc (A)",   100, 175);
-  text("Vmp (V)",   100, 205);
-  text("Imp (A)",   100, 235);
-  text("α Voc",     100, 265);
-  text("(např. -0.003)", 100, 280);
-
-  // 1) Načteme uživatelské vstupy
+// Hlavní funkce pro výpočet a zobrazení
+function updateCalc() {
+  // 1) Načíst vstupy
   let numPanels = parseInt(inpPanelCount.value());
+  if (isNaN(numPanels) || numPanels < 1) {
+    resultP.html("Zadejte platný počet panelů (celé kladné číslo).");
+    return;
+  }
+
   let chosenModel = selMPPT.value();
+  let sel = mpptList.find(m => m.model === chosenModel);
+  if (!sel) {
+    resultP.html("Chyba: Zvolený MPPT model nebyl nalezen.");
+    return;
+  }
 
   let panel_vykon = parseFloat(inpPanelVykon.value());
   let panel_Voc   = parseFloat(inpPanelVoc.value());
@@ -117,58 +147,26 @@ function draw() {
   let panel_Imp   = parseFloat(inpPanelImp.value());
   let alphaVoc    = parseFloat(inpAlphaVoc.value());
 
-  // Ověření platnosti
-  if (isNaN(numPanels) || numPanels < 1) {
-    fill('red');
-    text("Chyba: Počet panelů musí být kladné číslo!", 20, 320);
-    return;
-  }
-
-  // Najdeme zvolený model v seznamu (vrátí např. {model:..., maxVoc:..., maxIsc:...})
-  let selectedReg = mpptList.find(item => item.model === chosenModel);
-  if (!selectedReg) {
-    fill('red');
-    text("Chyba: Vybraný MPPT model nebyl nalezen v seznamu.", 20, 320);
-    return;
-  }
-
-  // 2) Přečteme maxVoc a maxIsc z vybraného modelu
-  let maxVoc = selectedReg.maxVoc;
-  let maxIsc = selectedReg.maxIsc;
-
-  // Vypíšeme zvolený model a parametry
-  fill(0);
-  let yBase = 320;
-  text(`Model: ${selectedReg.model} (maxVoc=${maxVoc} V, maxIsc=${maxIsc} A)`, 20, yBase);
-  yBase += 20;
-  text(`Počet panelů k dispozici: ${numPanels}`, 20, yBase);
-  yBase += 20;
-
-  // 3) Voc za studena (-20 °C) pro 1 panel
+  // 2) Výpočet Voc při -20°C
+  let tempLow = -20;
   let vocColdOnePanel = panel_Voc * (1 + alphaVoc*(tempLow - 25));
 
-  // 4) Hledáme (s, p): s * p <= numPanels, s*vocColdOnePanel <= maxVoc, p*panel_Isc <= maxIsc
+  // 3) Procházíme (s, p) a hledáme maximum s*p
   let bestUsed = 0;
   let bestS = 0;
   let bestP = 0;
 
   for (let s = 1; s <= numPanels; s++) {
     let totalVocCold = s * vocColdOnePanel;
-    if (totalVocCold > maxVoc) {
-      // napětí by překročilo limit MPPT
-      continue;
+    if (totalVocCold > sel.maxVoc) {
+      continue; // Napětí moc vysoké
     }
     for (let p = 1; p <= numPanels; p++) {
-      if (s * p > numPanels) {
-        // víc panelů, než máme
-        continue;
-      }
+      if (s*p > numPanels) break; // Nepoužívat > numPanels
       let totalIsc = p * panel_Isc;
-      if (totalIsc > maxIsc) {
-        // proud příliš vysoký
-        continue;
+      if (totalIsc > sel.maxIsc) {
+        continue; // Proud moc vysoký
       }
-      // Jinak feasible
       let used = s * p;
       if (used > bestUsed) {
         bestUsed = used;
@@ -178,20 +176,16 @@ function draw() {
     }
   }
 
-  yBase += 20;
+  // 4) Zobrazit výsledky
   if (bestUsed === 0) {
-    fill('red');
-    text("CHYBA: Žádné zapojení nevyhovuje Voc a Isc limitům!", 20, yBase);
+    resultP.html(
+      `Model: ${sel.model} (maxVoc=${sel.maxVoc} V, maxIsc=${sel.maxIsc} A)<br>
+       Počet panelů k dispozici: ${numPanels}<br><br>
+       <strong>Žádné zapojení nevyhovuje Voc / Isc limitům!</strong>`
+    );
     return;
   }
 
-  fill(0);
-  text(`Nejvíce využitých panelů: ${bestUsed} z ${numPanels}`, 20, yBase);
-  yBase += 20;
-  text(`Zapojení: ${bestS} v sérii × ${bestP} paralelně`, 20, yBase);
-  yBase += 30;
-
-  // 5) Výpočet Voc(25°C), Voc(-20°C), Isc, atd.
   let totalVoc25    = bestS * panel_Voc;
   let totalVocCold  = bestS * vocColdOnePanel;
   let totalIscPar   = bestP * panel_Isc;
@@ -199,17 +193,20 @@ function draw() {
   let totalImpPar   = bestP * panel_Imp;
   let totalPower    = bestUsed * panel_vykon;
 
-  text("Parametry výsledného zapojení:", 20, yBase);
-  yBase += 20;
-  text("- Voc (25°C): " + totalVoc25.toFixed(2) + " V", 40, yBase);
-  yBase += 20;
-  text("- Voc (-20°C): " + totalVocCold.toFixed(2) + " V", 40, yBase);
-  yBase += 20;
-  text("- Isc (celkem): " + totalIscPar.toFixed(2) + " A", 40, yBase);
-  yBase += 20;
-  text("- Vmp (série): " + totalVmpSerie.toFixed(2) + " V", 40, yBase);
-  yBase += 20;
-  text("- Imp (paralelně): " + totalImpPar.toFixed(2) + " A", 40, yBase);
-  yBase += 20;
-  text("- Teoretický výkon: " + totalPower.toFixed(2) + " W", 40, yBase);
+  let html = `
+    Model: ${sel.model} (maxVoc=${sel.maxVoc} V, maxIsc=${sel.maxIsc} A)<br>
+    Počet panelů k dispozici: ${numPanels}<br><br>
+
+    <strong>Nejvíce využitých panelů:</strong> ${bestUsed} z ${numPanels}<br>
+    <strong>Zapojení:</strong> ${bestS} v sérii × ${bestP} paralelně<br><br>
+
+    <strong>Parametry výsledného zapojení:</strong><br>
+    - Voc (25°C): ${totalVoc25.toFixed(2)} V<br>
+    - Voc (-20°C): ${totalVocCold.toFixed(2)} V<br>
+    - Isc (celkem): ${totalIscPar.toFixed(2)} A<br>
+    - Vmp (série): ${totalVmpSerie.toFixed(2)} V<br>
+    - Imp (paralelně): ${totalImpPar.toFixed(2)} A<br>
+    - Teoretický výkon: ${totalPower.toFixed(2)} W
+  `;
+  resultP.html(html);
 }
