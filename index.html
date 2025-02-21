@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar2 Project</title>
+</head>
+<body>
+    <h1>Solar2 Project</h1>
+    <button onclick="runSolarScript()">Run Solar Script</button>
+
+    <script src="solar.js"></script>
+    <script>
+        function runSolarScript() {
+            // Assuming the solar.js script contains a function named init or a similar entry point
+            if (typeof setup === 'function') {
+                setup();
+            } else {
+                console.error('setup function is not defined in solar.js');
+            }
+        }
+    </script>
+</body>
+</html>
