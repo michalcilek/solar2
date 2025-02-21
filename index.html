@@ -2,17 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Nastavení viewportu pro správné zobrazení na mobilních zařízeních -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solární kalkulačka</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solární kalkulačka - Debug verze</title>
 </head>
 <body>
-  <h1>Solární kalkulačka</h1>
+  <h1>Solární kalkulačka (debug verze)</h1>
+  
+  <!-- Kontejner pro zobrazování debug výpisů přímo v HTML -->
+  <div id="debug" style="
+       border:1px solid #ccc; 
+       padding:0.5em; 
+       background:#f8f8f8; 
+       margin-bottom:1em;">
+    <strong>DBG: </strong>
+    <span id="debugText">Spouštím HTML...</span>
+  </div>
 
-  <!-- Načtení p5.js z veřejného CDN (verzi si můžete upravit) -->
+  <script>
+    // Pomocná funkce pro přidávání debug textů na stránku
+    function dbg(msg) {
+      console.log(msg); // do konzole
+      const dbgEl = document.getElementById("debugText");
+      if (dbgEl) {
+        dbgEl.innerHTML += "<br>" + msg; // i do HTML
+      }
+    }
+
+    dbg("INDEX.HTML: Start načítání HTML...");
+  </script>
+
+  <!-- Načtení p5.js z CDN -->
   <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.min.js"></script>
+  <script>
+    dbg("INDEX.HTML: p5.js knihovna načtena. (verze: " + p5.version + ")");
+  </script>
 
-  <!-- Váš kód s logikou solární kalkulačky v p5 (musí definovat setup(), draw() atd.) -->
+  <!-- Váš p5 kód (musí definovat setup(), draw(), atd.) -->
   <script src="solar.js"></script>
+  <script>
+    dbg("INDEX.HTML: solar.js načten. Kontrola, zda existuje setup(): " + (typeof setup));
+
+    // P5 by měla automaticky zavolat setup() a draw()
+    // Po chvíli můžeme zkontrolovat, jestli se spustila
+    setTimeout(() => {
+      dbg("INDEX.HTML: Po 2s od načtení - typeof setup je " + (typeof setup));
+    }, 2000);
+  </script>
 </body>
 </html>
